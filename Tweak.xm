@@ -198,14 +198,14 @@ static UIColor *volumeGlyphColor = nil;
 	%hook CCUIContinuousSliderView
 
 		-(double)continousSliderCornerRadius {
-			if ([[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"CCUIDisplayModuleViewController")] || [[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"MRUVolumeViewController")])
+			if (([[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"CCUIDisplayModuleViewController")] && !MSHookIvar<BOOL>([self _viewControllerForAncestor],"_expanded")) || [[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"MRUVolumeViewController")])
 				return sliderCornerRadius;
 
 			return %orig;
 		}
 
 		-(void)setContinuousSliderCornerRadius:(double)arg1 {
-			if ([[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"CCUIDisplayModuleViewController")] || [[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"MRUVolumeViewController")])
+			if (([[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"CCUIDisplayModuleViewController")] && !MSHookIvar<BOOL>([self _viewControllerForAncestor],"_expanded")) || [[self _viewControllerForAncestor] isKindOfClass:NSClassFromString(@"MRUVolumeViewController")])
 				arg1 = sliderCornerRadius;
 
 			%orig(arg1);
