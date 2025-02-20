@@ -166,6 +166,11 @@ static UIColor *volumeGlyphColor = nil;
 			[self colorSliderGlyphs];
 		}
 
+		-(void)_setActiveGlyphView:(id)arg1 {
+			%orig;
+			[self colorSliderGlyphs];
+		}		
+
 	%end
 %end
 
@@ -437,19 +442,44 @@ static void respring(CFNotificationCenterRef center, void *observer, CFStringRef
 }
 
 static void reloadSettings() {
-	NSDictionary *prefs = [[NSDictionary alloc] initWithContentsOfFile:@"/var/jb/var/mobile/Library/Preferences/com.fiore.ccborder.plist"];
-	if(prefs)
-	{
-		wantsBorder = [prefs objectForKey:@"wantsBorder"] ? [[prefs objectForKey:@"wantsBorder"] boolValue] : wantsBorder;
-		wantsCornerRadius = [prefs objectForKey:@"wantsCornerRadius"] ? [[prefs objectForKey:@"wantsCornerRadius"] boolValue] : wantsCornerRadius;
-		wantsGlyphColoring = [prefs objectForKey:@"wantsGlyphColoring"] ? [[prefs objectForKey:@"wantsGlyphColoring"] boolValue] : wantsGlyphColoring;
-		borderWidth = [prefs objectForKey:@"borderWidth"] ? [[prefs objectForKey:@"borderWidth"] doubleValue] : borderWidth;
-		cornerRadius = [prefs objectForKey:@"cornerRadius"] ? [[prefs objectForKey:@"cornerRadius"] doubleValue] : cornerRadius;
-		sliderCornerRadius = [prefs objectForKey:@"sliderCornerRadius"] ? [[prefs objectForKey:@"sliderCornerRadius"] doubleValue] : sliderCornerRadius;
-		borderColor = [prefs objectForKey:@"borderColor"] ? LCPParseColorString([prefs objectForKey:@"borderColor"],@"#A9A9A9") : borderColor;
-		brightnessGlyphColor = [prefs objectForKey:@"brightnessGlyphColor"] ? LCPParseColorString([prefs objectForKey:@"brightnessGlyphColor"],@"#FF8548") : brightnessGlyphColor;
-		volumeGlyphColor = [prefs objectForKey:@"volumeGlyphColor"] ? LCPParseColorString([prefs objectForKey:@"volumeGlyphColor"],@"#00C6FB") : volumeGlyphColor;
+	static CFStringRef prefsKey = CFSTR("com.fiore.ccborder");
+	CFPreferencesAppSynchronize(prefsKey);
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsBorder", prefsKey))) {
+		wantsBorder = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsBorder", prefsKey)) boolValue];
+	}	
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsCornerRadius", prefsKey))) {
+		wantsCornerRadius = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsCornerRadius", prefsKey)) boolValue];
 	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsGlyphColoring", prefsKey))) {
+		wantsGlyphColoring = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"wantsGlyphColoring", prefsKey)) boolValue];
+	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"borderWidth", prefsKey))) {
+		borderWidth = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"borderWidth", prefsKey)) doubleValue];
+	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"cornerRadius", prefsKey))) {
+		cornerRadius = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"cornerRadius", prefsKey)) doubleValue];
+	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"sliderCornerRadius", prefsKey))) {
+		sliderCornerRadius = [(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"sliderCornerRadius", prefsKey)) doubleValue];
+	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"borderColor", prefsKey))) {
+		borderColor = LCPParseColorString([(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"borderColor", prefsKey)) stringValue],@"#A9A9A9");
+	}	
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"brightnessGlyphColor", prefsKey))) {
+		brightnessGlyphColor = LCPParseColorString([(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"brightnessGlyphColor", prefsKey)) stringValue],@"#FF8548");
+	}
+
+	if (CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"volumeGlyphColor", prefsKey))) {
+		volumeGlyphColor = LCPParseColorString([(id)CFBridgingRelease(CFPreferencesCopyAppValue((CFStringRef)@"volumeGlyphColor", prefsKey)) stringValue],@"#00C6FB");
+	}							
 
 	if (!borderColor)
 		borderColor = LCPParseColorString(@"#A9A9A9",@"#A9A9A9");
